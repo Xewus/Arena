@@ -10,9 +10,9 @@ from game.things import THINGS
 def auto_create_hero():
     klasse = Warrior if random.randint(0, 1) else Paladin
     name, sex = NAMES.pop(random.randint(0, len(NAMES) - 1))
-    defense = random.randint(1, 10) / 100
-    attack = random.randint(1, 20)
-    helth = random.randint(1, 20)
+    defense = random.uniform(0, MAX_HERO_DEFENSE)
+    attack = random.randint(1, MAX_HERO_ATTACK)
+    helth = random.randint(1, MAX_HERO_HEALTH)
     return klasse(name, defense, attack, helth, sex)
 
 
@@ -83,11 +83,13 @@ def battle(fighter_1, fighter_2):
     while True:
         fighter_2.decrease_helth(fighter_1.attack)
         if fighter_2.health <= 0:
+            FIGHTERS.remove(fighter_2)
             if not SURVIVAL:
                 fighter_1.health = freeze_health_1
             return fighter_1
         fighter_1.decrease_helth(fighter_2.attack)
         if fighter_1.health <= 0:
+            FIGHTERS.remove(fighter_1)
             if not SURVIVAL:
                 fighter_2.health = freeze_health_2
             return fighter_2
@@ -100,25 +102,20 @@ def main():
     print('\n---------  FIGHT!  --------\n')
 
     while True:
-        len_fighters = len(FIGHTERS) - 2
-        if len_fighters == -1:
+        len_fighters = len(FIGHTERS)
+        if len_fighters == 1:
             break
-        limit = len(FIGHTERS) - 1
-        fighter_1 = FIGHTERS.pop(random.randint(0, limit))
-        fighter_2 = FIGHTERS.pop(random.randint(0, limit - 1))
+        fighter_1, fighter_2 = random.sample(FIGHTERS, 2)
         count_battle += 1
         print(f'Бой №{count_battle} начался! '
               f'Участники: {fighter_1.name} и {fighter_2.name}.\n')
         winner = battle(fighter_1, fighter_2)
         if len_fighters < len(FIGHTERS):
             print(f'В этом бою родился {winner.name}!\n')
-            FIGHTERS.append(fighter_1)
-            FIGHTERS.append(fighter_2)
         else:
             print(f'В этом бою победил {winner.name}!!!\n')
-            FIGHTERS.append(winner)
     print(
-        f'    Поздравляем победителя {FIGHTERS[0].name}!!!')
+        f'    Поздравляем чемпиона {FIGHTERS[0].name}!!!')
 
 
 if __name__ == '__main__':

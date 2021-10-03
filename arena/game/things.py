@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, uniform
 from .game_settings import (
     MAX_THING_DEFENSE, MAX_THING_ATTACK, MAX_THING_HEALTH)
 
@@ -12,9 +12,9 @@ class Thing:
         if health > MAX_THING_HEALTH or health < 0:
             raise ValueError('Invalid health of thing value')
         self.name = str(name)
-        self.defense = float(defense)
-        self.attack = float(attack)
-        self.health = float(health)
+        self.defense = defense
+        self.attack = attack
+        self.health = health
 
 
 def sort_key_defense(thing):
@@ -22,8 +22,8 @@ def sort_key_defense(thing):
 
 
 THINGS = [
-    Thing('Socks of Fortune', randint(0, 10) / 100,
-          randint(0, 10), randint(0, 100)),
+    Thing('Socks of Fortune', uniform(0, MAX_THING_DEFENSE),
+          randint(0, MAX_THING_ATTACK), randint(0, MAX_THING_HEALTH)),
     Thing('Gods armor', 0.1, 0, 10),
     Thing('killing rage', 0, 10, 0),
     Thing('Ring of Health', 0, 0, 10),

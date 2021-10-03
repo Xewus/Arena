@@ -19,7 +19,19 @@ def auto_create_hero():
 FIGHTERS = [auto_create_hero() for _ in range(COUNT_PERSES)]
 
 
-def create_person(klasse):
+def create_hero():
+    while True:
+        klasse = input(
+            'Выберите класс Warrior или Paladin - W/P: ').lower()
+        if klasse == 'w':
+            klasse = Warrior
+        elif klasse == 'p':
+            klasse = Paladin
+        else:
+            klasse = input(
+                'Не правильно выбран класс. Попробовать ещё: - Y/N:  ').lower()
+        if klasse != 'y':
+            break
     gamer = klasse(
         name=input('Введите имя: '),
         defense=float(input(
@@ -35,15 +47,9 @@ def create_person(klasse):
 
 def user_input():
     global SURVIVAL
-    gamer = input('Желаете создать нового персонажа? Y/N: ').lower()
-    if gamer == 'y':
-        gamer = input('Выберите класс Warrior или Paladin - W/P: ').lower()
-        if gamer == 'w':
-            create_person(Warrior)
-        elif gamer == 'p':
-            create_person(Paladin)
-        else:
-            print('Вы не выбрали нужный класс, продолжим без Вас.')
+    create_your_hero = input('Желаете создать нового персонажа? Y/N: ').lower()
+    if create_your_hero == 'y':
+        create_hero()
     survival = input('Хотите установить режим "На выживание"?'
                      ' Тогда бойцы не восстановят здоровье после боя: Y/N: '
                      ).lower()
@@ -114,8 +120,9 @@ def main():
             print(f'В этом бою родился {winner.name}!\n')
         else:
             print(f'В этом бою победил {winner.name}!!!\n')
-    print(
-        f'    Поздравляем чемпиона {FIGHTERS[0].name}!!!')
+
+    print(f'    Поздравляем чемпиона {FIGHTERS[0].name}!!!')
+    print('______GAME OVER______')
 
 
 if __name__ == '__main__':

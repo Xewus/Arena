@@ -48,7 +48,7 @@ class Hero():
         if self.health > 0:
             print(f'Осталось {self.health} HP')
         else:
-            print(f'Боец {self.name} умер!', 'blue')
+            print(f'Боец {self.name} умер!')
 
 
 class Paladin(Hero):

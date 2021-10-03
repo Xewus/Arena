@@ -8,9 +8,9 @@ class Hero():
             raise ValueError('Invalid name of hero value')
         if defense > MAX_HERO_DEFENSE or defense < 0:
             raise ValueError('Invalid protection of hero value')
-        if attack > MAX_HERO_ATTACK or attack < 1:
+        if attack > MAX_HERO_ATTACK or attack < 0:
             raise ValueError('Invalid attack of hero value')
-        if health > MAX_HERO_HEALTH or health < 1:
+        if health > MAX_HERO_HEALTH or health < 0:
             raise ValueError('Invalid health of hero value')
         if sex not in 'wm':
             raise ValueError('Invalid sex of hero value')

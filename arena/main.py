@@ -19,29 +19,63 @@ def auto_create_hero():
 FIGHTERS = [auto_create_hero() for _ in range(COUNT_PERSES)]
 
 
+def test_input_value(atr, max_value):
+    value = input(
+            f'Установите {atr} от 0 до {max_value}:  ')
+    if value.isdigit():
+        value = float(value)
+    else:
+        print('Введены неверные данные.')
+        return True
+    if value > max_value:
+        return max_value
+    else:
+        return value
+    return True
+
+
 def create_hero():
     while True:
         klasse = input(
             'Выберите класс Warrior или Paladin - W/P: ').lower()
         if klasse == 'w':
             klasse = Warrior
+            break
         elif klasse == 'p':
             klasse = Paladin
+            break
         else:
             klasse = input(
                 'Не правильно выбран класс. Попробовать ещё: - Y/N:  ').lower()
         if klasse != 'y':
+            return None
+
+    while True:
+        name = input('Введите имя только из букв: ')
+        if name.isalpha():
             break
-    gamer = klasse(
-        name=input('Введите имя: '),
-        defense=float(input(
-            f'Установите защиту от 0 до {MAX_HERO_DEFENSE}:  ')),
-        attack=float(input(
-            f'Установите атаку от 1 до {MAX_HERO_ATTACK}:  ')),
-        health=float(input(
-            f'Установите злоровье от 1 до {MAX_HERO_HEALTH}:  ')),
-        sex=(input(
-            'Выберите пол персонажа W/M:  ').lower()), )
+        name = input('Не правильное имя. Попробовать ещё: - Y/N:  ').lower()
+        if name != 'y':
+            return None
+
+    defense = True
+    while defense:
+        defense = test_input_value('защита', MAX_HERO_DEFENSE)
+
+    attack = True
+    while attack:
+        attack = test_input_value('атака', MAX_HERO_ATTACK)
+
+    health = True
+    while health:
+        health = test_input_value('здоровье', MAX_HERO_HEALTH)
+
+    sex = input(
+        'Выберите пол персонажа W/M:  ').lower()
+    if sex not in 'wm':
+        sex = 'm'
+
+    gamer = klasse(name, defense, attack, health, sex)
     FIGHTERS.append(gamer)
 
 

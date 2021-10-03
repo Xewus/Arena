@@ -107,17 +107,14 @@ def main():
     get_things(FIGHTERS, THINGS)
     print('\n---------  FIGHT!  --------\n')
 
-    while True:
-        len_fighters = len(FIGHTERS)
-        if len_fighters == 1:
-            break
+    while len(FIGHTERS) > 1:
         fighter_1, fighter_2 = random.sample(FIGHTERS, 2)
         count_battle += 1
         print(f'Бой №{count_battle} начался! '
               f'Участники: {fighter_1.name} и {fighter_2.name}.\n')
         winner = battle(fighter_1, fighter_2)
-        if len_fighters < len(FIGHTERS):
-            print(f'В этом бою родился {winner.name}!\n')
+        if winner not in (fighter_1, fighter_2):
+            print(f'В этой встрече родился {winner.name}!\n')
         else:
             print(f'В этом бою победил {winner.name}!!!\n')
 

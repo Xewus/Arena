@@ -36,11 +36,15 @@ def check_input_digit_value(atr, max_value):
 
 
 def create_hero():
-    '''Creating a custom character.'''
+    '''Creating a custom hero.'''
     klasse = False
     while not klasse:
+        print('На данный момент в игре доступны следующие классы:')
+        [print(
+            AVAILABLE_HEROES_CLASSES[i].__name__
+            ) for i in AVAILABLE_HEROES_CLASSES]
         klasse = input(
-            'Выберите класс Warrior или Paladin - W/P: ').lower()
+            'Выберите класс введя первую букву класса: ').lower()
         if klasse not in AVAILABLE_HEROES_CLASSES:
             klasse = False
             print('Не правильно выбран класс.')

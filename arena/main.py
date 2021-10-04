@@ -122,7 +122,6 @@ def burn_child(heroes, fighter_1, fighter_2):
         random.shuffle(heroes)
         del heroes[:(MAX_POPULATION // 2)]
         print('Половина населения погибли от голода!')
-        print(len(heroes))
     return child
 
 
@@ -155,8 +154,6 @@ def main():
     print('\n---------  FIGHT!  --------\n')
 
     while len(HEROES) > 1:
-        print(len(HEROES))
-        sleep(0.5)
         fighter_1, fighter_2 = random.sample(HEROES, 2)
         count_battle += 1
         print(f'Бой №{count_battle} начался! \n'

@@ -3,37 +3,40 @@ from .game_settings import (
 
 
 class Hero():
-    def __init__(self, name, defense, attack, health, sex):
+    def __init__(self, name, sex, defense, attack, health):
         if not name.isalpha():
             raise ValueError('Invalid name of hero value')
-        if defense > MAX_HERO_DEFENSE or defense < 0:
-            raise ValueError('Invalid protection of hero value')
-        if attack > MAX_HERO_ATTACK or attack < 0:
-            raise ValueError('Invalid attack of hero value')
-        if health > MAX_HERO_HEALTH or health < 0:
-            raise ValueError('Invalid health of hero value')
         if sex not in 'wm':
             raise ValueError('Invalid sex of hero value')
+        if 0 > defense > MAX_HERO_DEFENSE:
+            raise ValueError('Invalid protection of hero value')
+        if 0 > attack > MAX_HERO_ATTACK:
+            raise ValueError('Invalid attack of hero value')
+        if 0 > health > MAX_HERO_HEALTH:
+            raise ValueError('Invalid health of hero value')
         self.name = name
+        self.sex = sex
+        self.sex_dependence = (1.1, 0.9)[sex == 'w']
         self.defense = defense
         if self.defense >= MAX_DEFENSE:
             self.defense = MAX_DEFENSE
-        self.attack = attack
-        self.health = health
-        self.sex = sex
+        self.attack = attack * self.sex_dependence
+        self.health = health / self.sex_dependence
         self.things = []
 
     def finalAttack(self):
         for thing in self.things:
             self.attack += thing.attack
+            self.attack *= self.sex_dependence
 
-    def finalDefense(self,):
+    def finalDefense(self):
         for thing in self.things:
             self.defense += thing.defense
 
     def finalHealth(self):
         for thing in self.things:
             self.health += thing.health
+            self.health /= self.sex_dependence
 
     def set_things(self, things):
         self.things.extend(things)
@@ -60,14 +63,14 @@ class Paladin(Hero):
     def finalHealth(self):
         for thing in self.things:
             self.health += thing.health
-        self.health *= 2
+        self.health = self.health * 2 / self.sex_dependence
 
 
 class Warrior(Hero):
     def finalAttack(self):
         for thing in self.things:
             self.attack += thing.attack
-        self.attack *= 2
+        self.attack = self.attack * 2 * self.sex_dependence
 
 
 class Child(Paladin, Warrior):

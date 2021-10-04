@@ -12,10 +12,11 @@ MAX_HERO_HEALTH = 50
 
 # game mode (restoring health)
 SURVIVAL = False
+WITH_THINGS = True
+CREATE_USERS_HERO = True
 
 COUNT_THINGS_ON_PERS = 4
-
-COUNT_PERSES = 20
+COUNT_BOTS = 2
 
 NAMES = [
     ('Keowe', 'w'),
@@ -40,5 +41,5 @@ NAMES = [
     ('Henry', 'm'),
 ]
 
-if COUNT_PERSES > len(NAMES):
-    COUNT_PERSES = len(NAMES)
+if COUNT_BOTS > len(NAMES):
+    COUNT_BOTS = len(NAMES)

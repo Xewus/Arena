@@ -3,7 +3,7 @@ import random
 from game.game_settings import (
     NAMES, COUNT_PERSES, COUNT_THINGS_ON_PERS,
     MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_HEALTH, SURVIVAL)
-from game.heroes import Child, Paladin, Warrior
+from game.heroes import Child, Paladin, Warrior, AVAILABLE_HEROES_CLASSES
 from game.things import THINGS
 
 
@@ -26,48 +26,38 @@ def test_input_value(atr, max_value):
         value = float(value)
     else:
         print('Введены неверные данные.')
-        return True
-    if value > max_value:
-        return max_value
-    else:
-        return value
-    return True
+        return False
+    return (value, max_value)[value > max_value]
 
 
 def create_hero():
-    while True:
+    klasse = False
+    while not klasse:
         klasse = input(
             'Выберите класс Warrior или Paladin - W/P: ').lower()
-        if klasse == 'w':
-            klasse = Warrior
-            break
-        elif klasse == 'p':
-            klasse = Paladin
-            break
-        else:
-            klasse = input(
-                'Не правильно выбран класс. Попробовать ещё: - Y/N:  ').lower()
-        if klasse != 'y':
-            return None
+        if klasse not in AVAILABLE_HEROES_CLASSES:
+            klasse = False
+            print('Не правильно выбран класс.')
+            continue
+        klasse = AVAILABLE_HEROES_CLASSES[klasse]
 
-    while True:
-        name = input('Введите имя только из букв: ')
-        if name.isalpha():
-            break
-        name = input('Не правильное имя. Попробовать ещё: - Y/N:  ').lower()
-        if name != 'y':
-            return None
+    name = False
+    while not name:
+        name = input('Введите имя только из букв: ') + 'son'
+        if not name.isalpha():
+            name = False
+            print('Не правильное имя.')
 
-    defense = True
-    while defense:
+    defense = False
+    while not defense:
         defense = test_input_value('защита', MAX_HERO_DEFENSE)
 
-    attack = True
-    while attack:
+    attack = False
+    while not attack:
         attack = test_input_value('атака', MAX_HERO_ATTACK)
 
-    health = True
-    while health:
+    health = False
+    while not health:
         health = test_input_value('здоровье', MAX_HERO_HEALTH)
 
     sex = input(
@@ -152,8 +142,10 @@ def main():
         else:
             print(f'В этом бою победил {winner.name}!!!\n')
 
-    print(f'    Поздравляем чемпиона {FIGHTERS[0].name}!!!')
-    print('______GAME OVER______')
+    winner = FIGHTERS[0]
+    print(f'    Поздравляем чемпиона {count_battle} боёв:'
+          f'    {type(winner).__name__} {winner.name}!!!')
+    print('     ______GAME OVER______')
 
 
 if __name__ == '__main__':

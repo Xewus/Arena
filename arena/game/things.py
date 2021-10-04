@@ -5,11 +5,11 @@ from .game_settings import (
 
 class Thing:
     def __init__(self, name, defense, attack, health):
-        if defense > MAX_THING_DEFENSE or defense < 0:
+        if 0 > defense > MAX_THING_DEFENSE:
             raise ValueError('Invalid protection of thing value')
-        if attack > MAX_THING_ATTACK or attack < 0:
+        if 0 > attack > MAX_THING_ATTACK:
             raise ValueError('Invalid attack of thing value')
-        if health > MAX_THING_HEALTH or health < 0:
+        if 0 > health > MAX_THING_HEALTH:
             raise ValueError('Invalid health of thing value')
         self.name = str(name)
         self.defense = defense

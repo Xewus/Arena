@@ -1,5 +1,5 @@
 from .game_settings import (
-    MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_HEALTH,)
+    MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_HEALTH, MAX_DEFENSE)
 
 
 class Hero():
@@ -16,8 +16,8 @@ class Hero():
             raise ValueError('Invalid sex of hero value')
         self.name = name
         self.defense = defense
-        if self.defense >= 0.9:
-            self.defense = 0.9
+        if self.defense >= MAX_DEFENSE:
+            self.defense = MAX_DEFENSE
         self.attack = attack
         self.health = health
         self.sex = sex
@@ -42,7 +42,7 @@ class Hero():
         self.finalHealth()
 
     def decrease_helth(self, attack_damage):
-        damage = attack_damage - attack_damage * self.defense
+        damage = attack_damage - attack_damage * (self.defense / 100)
         self.health -= damage
         print(f'{self.name} получил урон - {damage}')
         if self.health > 0:
@@ -74,9 +74,15 @@ class Child(Paladin, Warrior):
     def __init__(self, name, defense, attack, health, sex):
         self.name = name
         self.defense = defense
-        if self.defense >= 0.9:
-            self.defense = 0.9
+        if self.defense >= MAX_DEFENSE:
+            self.defense = MAX_DEFENSE
         self.attack = attack
         self.health = health
         self.sex = sex
         self.things = []
+
+
+AVAILABLE_HEROES_CLASSES = {
+    'p': Paladin,
+    'w': Warrior,
+}

@@ -1,4 +1,4 @@
-from random import randint, uniform
+from random import randint
 from .game_settings import (
     MAX_THING_DEFENSE, MAX_THING_ATTACK, MAX_THING_HEALTH)
 
@@ -22,12 +22,12 @@ def sort_key_defense(thing):
 
 
 THINGS = [
-    Thing('Socks of Fortune', uniform(0, MAX_THING_DEFENSE),
+    Thing('Socks of Fortune', randint(0, MAX_THING_DEFENSE),
           randint(0, MAX_THING_ATTACK), randint(0, MAX_THING_HEALTH)),
-    Thing('Gods armor', 0.1, 0, 10),
+    Thing('Gods armor', 20, 0, 20),
     Thing('killing rage', 0, 10, 0),
-    Thing('Ring of Health', 0, 0, 10),
-    Thing('Ring of Power', 0.02, 5, 0),
-    Thing('Casual hat', 0.1, 5, 5),
-    Thing('Ferrobots', 0.1, 2, 3)
+    Thing('Ring of Health', 0, 0, 100),
+    Thing('Ring of Power', 1, 50, 0),
+    Thing('Casual hat', 1, 5, 5),
+    Thing('Ferrobots', 10, 2, 20)
 ]

@@ -2,6 +2,10 @@ from .game_settings import (
     MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_HEALTH, MAX_DEFENSE)
 
 
+def check_defense(defense):
+    return (defense, MAX_DEFENSE)[defense > MAX_DEFENSE]
+
+
 class Hero():
     def __init__(self, name, sex, defense, attack, health):
         if not name.isalpha():
@@ -17,9 +21,7 @@ class Hero():
         self.name = name
         self.sex = sex
         self.sex_dependence = (1.1, 0.9)[sex == 'w']
-        self.defense = defense
-        if self.defense >= MAX_DEFENSE:
-            self.defense = MAX_DEFENSE
+        self.defense = check_defense(defense)
         self.attack = attack * self.sex_dependence
         self.health = health / self.sex_dependence
         self.things = []
@@ -32,6 +34,7 @@ class Hero():
     def finalDefense(self):
         for thing in self.things:
             self.defense += thing.defense
+            self.defense = check_defense(self.defense)
 
     def finalHealth(self):
         for thing in self.things:
@@ -55,10 +58,11 @@ class Hero():
 
 
 class Paladin(Hero):
-    def finalDefense(self,):
+    def finalDefense(self):
         for thing in self.things:
             self.defense += thing.defense
         self.defense *= 2
+        self.defense = check_defense(self.defense)
 
     def finalHealth(self):
         for thing in self.things:
@@ -74,11 +78,9 @@ class Warrior(Hero):
 
 
 class Child(Paladin, Warrior):
-    def __init__(self, name, defense, attack, health, sex):
+    def __init__(self, sex, name, defense, attack, health):
         self.name = name
-        self.defense = defense
-        if self.defense >= MAX_DEFENSE:
-            self.defense = MAX_DEFENSE
+        self.defense = check_defense(defense)
         self.attack = attack
         self.health = health
         self.sex = sex

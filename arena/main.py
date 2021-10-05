@@ -2,7 +2,7 @@ import random
 from time import sleep
 
 from game.game_settings import (
-    COUNT_BOTS, COUNT_THINGS_ON_PERS, CREATE_USERS_HERO, MAX_HERO_DEFENSE,
+    COUNT_BOTS, COUNT_THINGS_ON_HERO, CREATE_USERS_HERO, MAX_HERO_DEFENSE,
     MAX_HERO_ATTACK, MAX_HERO_HEALTH, MAX_POPULATION, NAMES, SURVIVAL,
     WITH_THINGS)
 from game.heroes import Child, Paladin, Warrior, AVAILABLE_HEROES_CLASSES
@@ -78,12 +78,13 @@ def create_hero(HEROES):
 
 
 def user_input(HEROES):
-    global CREATE_USERS_HERO, SURVIVAL
-    while CREATE_USERS_HERO:
+    global SURVIVAL
+    create_heroes = CREATE_USERS_HERO
+    while create_heroes:
         if input('Желаете создать нового персонажа? Y/N: ').lower() == 'y':
             create_hero(HEROES)
         else:
-            CREATE_USERS_HERO = False
+            create_heroes = False
     survival = input('Хотите установить режим "На выживание"?'
                      ' Тогда бойцы не восстановят здоровье после боя: Y/N: '
                      ).lower()
@@ -95,7 +96,7 @@ def get_things(heroes, things):
     if not WITH_THINGS:
         return None
     for hero in heroes:
-        limit = random.randint(0, COUNT_THINGS_ON_PERS)
+        limit = random.randint(0, COUNT_THINGS_ON_HERO)
         choised_things = random.sample(things, limit)
         if choised_things:
             hero.set_things(choised_things)
@@ -106,7 +107,6 @@ def get_things(heroes, things):
             print(f'\n"{hero.name}" не повезло, ему не выпало ничего!')
         print(
             f'def={hero.defense}, attack={hero.attack}, HP={hero.health}\n\n')
-        sleep(0.1)
 
 
 def burn_child(heroes, fighter_1, fighter_2):
@@ -122,6 +122,7 @@ def burn_child(heroes, fighter_1, fighter_2):
         random.shuffle(heroes)
         del heroes[:(MAX_POPULATION // 2)]
         print('Половина населения погибли от голода!')
+        sleep(2)
     return child
 
 

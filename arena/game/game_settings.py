@@ -1,5 +1,5 @@
-MAX_DEFENSE = 90
-MAX_POPULATION = 100
+# acceptable attributes of heroes
+ATTRIBUTES_HERO = ('name', 'sex',  'defense', 'attack', 'health')
 
 #  things settings
 MAX_THING_DEFENSE = 50
@@ -12,12 +12,14 @@ MAX_HERO_ATTACK = 20
 MAX_HERO_HEALTH = 50
 
 # game mode (restoring health)
+MAX_DEFENSE = 90
+MAX_POPULATION = 100
 SURVIVAL = False
 WITH_THINGS = True
 CREATE_USERS_HERO = True
 
-COUNT_THINGS_ON_PERS = 4
-COUNT_BOTS = 2
+COUNT_THINGS_ON_HERO = 4
+COUNT_BOTS = 20
 
 NAMES = [
     ('Keowe', 'w'),

@@ -1,5 +1,6 @@
 from random import randint
 from .game_settings import (
+    COUNT_THINGS_ON_HERO,
     MAX_THING_DEFENSE, MAX_THING_ATTACK, MAX_THING_HEALTH)
 
 
@@ -25,9 +26,12 @@ THINGS = [
     Thing('Socks of Fortune', randint(0, MAX_THING_DEFENSE),
           randint(0, MAX_THING_ATTACK), randint(0, MAX_THING_HEALTH)),
     Thing('Gods armor', 20, 0, 20),
-    Thing('killing rage', 0, 10, 0),
-    Thing('Ring of Health', 0, 0, 100),
+    Thing('killing rage', 0, 100, 0),
+    Thing('Ring of Health', 1, 0, 100),
     Thing('Ring of Power', 1, 50, 0),
     Thing('Casual hat', 1, 5, 5),
     Thing('Ferrobots', 10, 2, 20)
 ]
+
+if COUNT_THINGS_ON_HERO > len(THINGS):
+    COUNT_THINGS_ON_HERO = len(THINGS)

@@ -1,4 +1,5 @@
 from .game_settings import (
+    ATTRIBUTES_HERO,
     MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_HEALTH, MAX_DEFENSE)
 
 
@@ -7,6 +8,12 @@ def check_defense(defense):
 
 
 class Hero():
+    __slots__ = ATTRIBUTES_HERO
+    _defense_multiplier = 1
+    _attack_multiplier = 1
+    _health_multiplier = 1
+    _dodge_multiplier = 1
+
     def __init__(self, name, sex, defense, attack, health):
         if not name.isalpha():
             raise ValueError('Invalid name of hero value')
@@ -21,25 +28,28 @@ class Hero():
         self.name = name
         self.sex = sex
         self.sex_dependence = (1.1, 0.9)[sex == 'w']
-        self.defense = check_defense(defense)
-        self.attack = attack * self.sex_dependence
-        self.health = health / self.sex_dependence
+        self.defense = int(
+            check_defense(defense * self._defense_multiplier))
+        self.attack = int(
+            attack * self.sex_dependence * self._attack_multiplier)
+        self.health = int(
+            health / self.sex_dependence * self._health_multiplier)
         self.things = []
-
-    def finalAttack(self):
-        for thing in self.things:
-            self.attack += thing.attack
-            self.attack *= self.sex_dependence
 
     def finalDefense(self):
         for thing in self.things:
-            self.defense += thing.defense
-            self.defense = check_defense(self.defense)
+            self.defense += thing.defense * self._defense_multiplier
+            self.defense = int(check_defense(self.defense))
+
+    def finalAttack(self):
+        for thing in self.things:
+            self.attack += int(
+                thing.attack * self._attack_multiplier * self.sex_dependence)
 
     def finalHealth(self):
         for thing in self.things:
-            self.health += thing.health
-            self.health /= self.sex_dependence
+            self.health += int(
+                thing.health * self._health_multiplier / self.sex_dependence)
 
     def set_things(self, things):
         self.things.extend(things)
@@ -58,33 +68,19 @@ class Hero():
 
 
 class Paladin(Hero):
-    def finalDefense(self):
-        for thing in self.things:
-            self.defense += thing.defense
-        self.defense *= 2
-        self.defense = check_defense(self.defense)
-
-    def finalHealth(self):
-        for thing in self.things:
-            self.health += thing.health
-        self.health = self.health * 2 / self.sex_dependence
+    _defense_multiplier = 2
+    _health_multiplier = 2
 
 
 class Warrior(Hero):
-    def finalAttack(self):
-        for thing in self.things:
-            self.attack += thing.attack
-        self.attack = self.attack * 2 * self.sex_dependence
+    _attack_multiplier = 2
 
 
 class Child(Paladin, Warrior):
-    def __init__(self, sex, name, defense, attack, health):
-        self.name = name
-        self.defense = check_defense(defense)
-        self.attack = attack
-        self.health = health
-        self.sex = sex
-        self.things = []
+    _defense_multiplier = 1
+    _attack_multiplier = 1
+    _health_multiplier = 1
+    _dodge_multiplier = 1
 
 
 AVAILABLE_HEROES_CLASSES = {

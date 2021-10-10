@@ -16,10 +16,12 @@ class Hero():
     _health_multiplier = 1
     _dodge_multiplier = 1
 
-    def __init__(self, name='', sex='w',
+    def __init__(self, name='', surname='', sex='w',
                  defense=0, attack=0, dodge=0, health=0):
         if not name.isalpha():
             raise ValueError('Invalid name of hero value')
+        if not surname.isalpha():
+            raise ValueError('Invalid surname of hero value')
         if sex not in 'wm':
             raise ValueError('Invalid sex of hero value')
         if 0 > defense > MAX_HERO_DEFENSE:
@@ -31,6 +33,7 @@ class Hero():
         if 0 > health > MAX_HERO_HEALTH:
             raise ValueError('Invalid health of hero value')
         self.name = name
+        self.surname = surname
         self.sex = sex
         self.sex_dependence = (1.1, 0.9)[sex == 'w']
         self.defense = int(
@@ -86,7 +89,7 @@ class Hero():
 
 class Paladin(Hero):
     _defense_multiplier = 2
-    _health_multiplier = 2
+    _health_multiplier = 1.5
 
 
 class Warrior(Hero):
@@ -94,15 +97,8 @@ class Warrior(Hero):
 
 
 class Rogue(Hero):
-    _attack_multiplier = 1.5
-    _dodge_multiplier = 2
-
-
-class Child(Paladin, Warrior):
-    _defense_multiplier = 1
-    _attack_multiplier = 1
-    _health_multiplier = 1
-    _dodge_multiplier = 1
+    _attack_multiplier = 1.3
+    _dodge_multiplier = 1.3
 
 
 AVAILABLE_HEROES_CLASSES = {

@@ -5,7 +5,7 @@ from game import game_settings
 from game.game_settings import (
     CREATE_USERS_HERO, MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_DODGE,
     MAX_HERO_HEALTH, WITH_THINGS)
-from game.heroes import Child, AVAILABLE_HEROES_CLASSES
+from game.heroes import AVAILABLE_HEROES_CLASSES
 from game.things import THINGS
 
 
@@ -66,12 +66,12 @@ def auto_create_hero(names):
 
     klasses = list(AVAILABLE_HEROES_CLASSES.values())
     klasse = random.choice(klasses)
-    name, sex = names.pop(random.randint(0, len(names) - 1))
+    name, surname, sex = names.pop(random.randint(0, len(names) - 1))
     defense = random.randint(0, MAX_HERO_DEFENSE)
     attack = random.randint(1, MAX_HERO_ATTACK)
     dodge = random.randint(0, MAX_HERO_DODGE)
     helth = random.randint(1, MAX_HERO_HEALTH)
-    hero = klasse(name, sex, defense, attack, dodge, helth)
+    hero = klasse(name, surname, sex, defense, attack, dodge, helth)
     print(f'Create {type(hero).__name__} "{hero.name}" {hero.sex}\n'
           f'def={hero.defense}, attack={hero.attack}, '
           f'dodge={hero.dodge}, HP={hero.health}\n\n')
@@ -82,7 +82,7 @@ def create_hero():
     '''Creating a custom hero.'''
 
     klasse = False
-    while not klasse:
+    while klasse is False:
         print('На данный момент в игре доступны следующие классы:')
         [print(
             AVAILABLE_HEROES_CLASSES[klass].__name__
@@ -97,16 +97,18 @@ def create_hero():
         print(f'Выбран {klasse.__name__}')
 
     name = False
-    while not name:
-        name = (input('Введите имя только из букв: ') + 'son').capitalize()
+    while name is False:
+        name = input('Введите имя только из букв: ').capitalize()
         if not name.isalpha():
             name = False
             print('Не правильное имя.')
             continue
         print(f'Выбрано {name}')
 
+    surname = 'Userson'
+
     sex = False
-    while not sex:
+    while sex is False:
         sex = input('Выберите пол персонажа W/M:  ').lower()
         if sex not in 'mw':
             sex = False
@@ -133,7 +135,7 @@ def create_hero():
         health = check_input_numeric_value(
             atr='здоровье', max_value=MAX_HERO_HEALTH)
 
-    hero = klasse(name, sex, defense, attack, dodge, health)
+    hero = klasse(name, surname, sex, defense, attack, dodge, health)
     return hero
 
 
@@ -179,19 +181,20 @@ def get_things(heroes, things):
 def burn_child(heroes, fighter_1, fighter_2):
     '''Creating a new hero if two opposite-sex heroes meet.'''
 
-    name = (fighter_1.name + fighter_2.name)[:13]
-    sex = fighter_1.sex
+    klasse = type(fighter_1)
+    name = fighter_1.name
+    surname = fighter_2.name + 'son'[:13]
+    sex = fighter_2.sex
     defense = (fighter_1.defense + fighter_2.defense) // 2
     attack = (fighter_1.attack + fighter_2.attack) // 2
     dodge = (fighter_1.dodge + fighter_2.dodge) // 2
     health = (fighter_1.health + fighter_2.health) // 2
-    child = Child(name, sex, defense, attack, dodge, health)
+    child = klasse(name, surname, sex, defense, attack, dodge, health)
     heroes.append(child)
     if len(heroes) > MAX_POPULATION:
         random.shuffle(heroes)
         del heroes[:(MAX_POPULATION // 2)]
         print('Половина населения погибли от голода!')
-        sleep(2)
     return child
 
 
@@ -201,7 +204,7 @@ def two_heroes_fight(HEROES, fighter_1, fighter_2):
 
     freeze_health_1 = fighter_1.health
     freeze_health_2 = fighter_2.health
-    if fighter_1.sex != fighter_2.sex and random.randint(0, 2):
+    if fighter_1.sex != fighter_2.sex and random.randint(0, 1):
         return burn_child(HEROES, fighter_1, fighter_2)
 
     while True:
@@ -239,13 +242,16 @@ def main():
               f' {type(fighter_2).__name__} {fighter_2.name}.\n')
         winner = two_heroes_fight(HEROES, fighter_1, fighter_2)
         if winner not in (fighter_1, fighter_2):
-            print(f'В этой встрече родился {winner.name}!\n')
+            print('Был рождён:\n'
+                  f'{type(winner).__name__} {winner.name} {winner.surname}!\n'
+                  f'def={winner.defense}, attack={winner.attack}, '
+                  f'dodge={winner.dodge}, HP={winner.health}')
         else:
             print(f'В этом бою победил {winner.name}!!!\n')
 
     winner = HEROES[0]
     print(f'    Поздравляем чемпиона {count_battle} боёв:\n'
-          f'    {type(winner).__name__} {winner.name} ({winner.sex})!!!\n'
+          f'    {type(winner).__name__} {winner.name} {winner.surname}!!!\n'
           f'def={winner.defense}, attack={winner.attack}, '
           f'dodge={winner.dodge}, HP={winner.health}')
     print('\n---------  GAME OVER  --------\n')

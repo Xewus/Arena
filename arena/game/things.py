@@ -35,7 +35,7 @@ THINGS = [
     Thing('Ring of Power', 1, 50, 0, 0),
     Thing('Casual hat', 1, 5, 5, 5),
     Thing('Ferrobots', 10, 2, 10, 20),
-    Thing('Snake pants', 5, 10, 30, 20)
+    Thing('Snake pants', 5, 10, 20, 20)
 ]
 
 if COUNT_THINGS_ON_HERO > len(THINGS):

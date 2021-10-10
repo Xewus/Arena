@@ -19,7 +19,6 @@ WITH_THINGS = True
 CREATE_USERS_HERO = True
 
 COUNT_THINGS_ON_HERO = 4
-COUNT_BOTS = 20
 
 NAMES = [
     ('Keowe', 'w'),
@@ -44,5 +43,4 @@ NAMES = [
     ('Henry', 'm'),
 ]
 
-if COUNT_BOTS > len(NAMES):
-    COUNT_BOTS = len(NAMES)
+COUNT_BOTS = len(NAMES)

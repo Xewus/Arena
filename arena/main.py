@@ -1,15 +1,69 @@
 import random
 from time import sleep
 
+from game import game_settings
 from game.game_settings import (
-    COUNT_BOTS, COUNT_THINGS_ON_HERO, CREATE_USERS_HERO, MAX_HERO_DEFENSE,
-    MAX_HERO_ATTACK, MAX_HERO_HEALTH, MAX_POPULATION, NAMES, SURVIVAL,
-    WITH_THINGS)
+    CREATE_USERS_HERO, MAX_HERO_DEFENSE, MAX_HERO_ATTACK,
+    MAX_HERO_HEALTH, NAMES, WITH_THINGS)
 from game.heroes import Child, Paladin, Warrior, AVAILABLE_HEROES_CLASSES
 from game.things import THINGS
 
 
+COUNT_BOTS = game_settings.COUNT_BOTS
+COUNT_THINGS_ON_HERO = game_settings.COUNT_THINGS_ON_HERO
+MAX_POPULATION = game_settings.MAX_POPULATION
+SURVIVAL = game_settings.SURVIVAL
+
+
+def user_settings():
+    if input('Изменить настройки игры? Y/N:  ').lower() != 'y':
+        return None
+    global COUNT_BOTS
+    global COUNT_THINGS_ON_HERO
+    global MAX_POPULATION
+    global SURVIVAL
+
+    count_bots = False
+    while count_bots is False:
+        count_bots = check_input_numeric_value(
+            atr='количество ботов',
+            max_value=game_settings.COUNT_BOTS)
+    COUNT_BOTS = count_bots
+
+    count_things_on_hero = False
+    while count_things_on_hero is False:
+        count_things_on_hero = check_input_numeric_value(
+            atr='Количество вещей у героя',
+            max_value=game_settings.COUNT_THINGS_ON_HERO)
+    COUNT_THINGS_ON_HERO = count_things_on_hero
+
+    max_population = False
+    while max_population is False:
+        max_population = check_input_numeric_value(
+            atr='Максимально количество героев',
+            min_value=COUNT_BOTS, max_value=game_settings.MAX_POPULATION)
+    MAX_POPULATION = max_population
+
+    SURVIVAL = input(
+        'Установить режим игры "на выживание"?'
+        'HP не будет восстанавлиываться после боя. Y/N  :').lower() == 'y'
+
+
+def check_input_numeric_value(atr, min_value=0, max_value=1):
+    '''Checking user input for numeric attributes.'''
+
+    value = input(
+            f'Установите {atr} от {min_value} до {max_value}:  ')
+    if not value.isdigit():
+        print('Введены неверные данные.')
+        return False
+    value = int(value)
+    return (value, max_value)[value > max_value]
+
+
 def auto_create_hero():
+    '''Creates bots when the program starts.'''
+
     names = NAMES.copy()
     klasse = Warrior if random.randint(0, 1) else Paladin
     name, sex = names.pop(random.randint(0, len(NAMES) - 1))
@@ -22,26 +76,15 @@ def auto_create_hero():
     return hero
 
 
-def check_input_digit_value(atr, max_value):
-    '''Checking user input for numeric attributes.'''
-    value = input(
-            f'Установите {atr} от 1 до {max_value}:  ')
-    if value.isdigit():
-        value = float(value)
-    else:
-        print('Введены неверные данные.')
-        return False
-    return (value, max_value)[value > max_value]
-
-
-def create_hero(HEROES):
+def create_hero():
     '''Creating a custom hero.'''
+
     klasse = False
     while not klasse:
         print('На данный момент в игре доступны следующие классы:')
         [print(
-            AVAILABLE_HEROES_CLASSES[i].__name__
-            ) for i in AVAILABLE_HEROES_CLASSES]
+            AVAILABLE_HEROES_CLASSES[klass].__name__
+            ) for klass in AVAILABLE_HEROES_CLASSES]
         klasse = input(
             'Выберите класс введя первую букву класса: ').lower()
         if klasse not in AVAILABLE_HEROES_CLASSES:
@@ -49,51 +92,66 @@ def create_hero(HEROES):
             print('Не правильно выбран класс.')
             continue
         klasse = AVAILABLE_HEROES_CLASSES[klasse]
+        print(f'Выбран {klasse.__name__}')
 
     name = False
     while not name:
-        name = input('Введите имя только из букв: ') + 'son'
+        name = (input('Введите имя только из букв: ') + 'son').capitalize()
         if not name.isalpha():
             name = False
             print('Не правильное имя.')
+            continue
+        print(f'Выбрано {name}')
 
-    sex = ('m', 'w')[input('Выберите пол персонажа W/M:  ')[0].lower() == 'w']
+    sex = False
+    while not sex:
+        sex = input('Выберите пол персонажа W/M:  ').lower()
+        if sex not in 'mw':
+            sex = False
+            print('Неправильно указан пол.')
+            continue
 
     defense = False
-    while not defense:
-        defense = check_input_digit_value('защита', MAX_HERO_DEFENSE)
+    while defense is False:
+        defense = check_input_numeric_value(
+            atr='защита', max_value=MAX_HERO_DEFENSE)
 
     attack = False
-    while not attack:
-        attack = check_input_digit_value('атака', MAX_HERO_ATTACK)
+    while attack is False:
+        attack = check_input_numeric_value(
+            atr='атака', max_value=MAX_HERO_ATTACK)
 
     health = False
-    while not health:
-        health = check_input_digit_value('здоровье', MAX_HERO_HEALTH)
+    while health is False:
+        health = check_input_numeric_value(
+            atr='здоровье', max_value=MAX_HERO_HEALTH)
 
     hero = klasse(name, sex, defense, attack, health)
-    print(f'Create {type(hero).__name__} "{hero.name}" {hero.sex}\n'
-          f'def={hero.defense}, attack={hero.attack}, HP={hero.health}\n\n')
-    HEROES.append(hero)
+    return hero
 
 
-def user_input(HEROES):
-    global SURVIVAL
+def user_create_hero(HEROES):
+    '''Allows the user to set game settings and create custom heroes.'''
+
     create_heroes = CREATE_USERS_HERO
     while create_heroes:
-        if input('Желаете создать нового персонажа? Y/N: ').lower() == 'y':
-            create_hero(HEROES)
-        else:
-            create_heroes = False
-    survival = input('Хотите установить режим "На выживание"?'
-                     ' Тогда бойцы не восстановят здоровье после боя: Y/N: '
-                     ).lower()
-    SURVIVAL = survival == 'y'
+        available_count_create = MAX_POPULATION - len(HEROES)
+        if not available_count_create:
+            break
+        print(f'Доступно создание {available_count_create} героев')
+        create = input('Желаете создать нового героя? Y/N: ').lower()
+        if create != 'y':
+            break
+        hero = create_hero()
+        print(f'Create {type(hero).__name__} "{hero.name}" {hero.sex}\n'
+              f'def={hero.defense}, attack={hero.attack}, HP={hero.health}\n')
+        HEROES.append(hero)
 
 
 def get_things(heroes, things):
     '''Distribution of things to heroes.'''
-    if not WITH_THINGS:
+
+    if not WITH_THINGS or COUNT_THINGS_ON_HERO == 0:
         return None
     for hero in heroes:
         limit = random.randint(0, COUNT_THINGS_ON_HERO)
@@ -111,6 +169,7 @@ def get_things(heroes, things):
 
 def burn_child(heroes, fighter_1, fighter_2):
     '''Creating a new hero if two opposite-sex heroes meet.'''
+
     name = (fighter_1.name + fighter_2.name)[:13]
     sex = fighter_1.sex
     defense = (fighter_1.defense + fighter_2.defense) / 2
@@ -126,7 +185,10 @@ def burn_child(heroes, fighter_1, fighter_2):
     return child
 
 
-def battle(HEROES, fighter_1, fighter_2):
+def two_heroes_fight(HEROES, fighter_1, fighter_2):
+    '''The battle of two heroes.
+    A new bot may appear if two heroes of the opposite sex meet.'''
+
     freeze_health_1 = fighter_1.health
     freeze_health_2 = fighter_2.health
     if fighter_1.sex != fighter_2.sex and random.randint(0, 2):
@@ -148,9 +210,13 @@ def battle(HEROES, fighter_1, fighter_2):
 
 
 def main():
+    user_settings()
     HEROES = [auto_create_hero() for _ in range(COUNT_BOTS)]
     count_battle = 0
-    user_input(HEROES)
+    user_create_hero(HEROES)
+    if not HEROES:
+        print('Желающих сражаться - нет.')
+        return None
     get_things(HEROES, THINGS)
     print('\n---------  FIGHT!  --------\n')
 
@@ -160,7 +226,7 @@ def main():
         print(f'Бой №{count_battle} начался! \n'
               f'Участники: {type(fighter_1).__name__} {fighter_1.name} и'
               f' {type(fighter_2).__name__} {fighter_2.name}.\n')
-        winner = battle(HEROES, fighter_1, fighter_2)
+        winner = two_heroes_fight(HEROES, fighter_1, fighter_2)
         if winner not in (fighter_1, fighter_2):
             print(f'В этой встрече родился {winner.name}!\n')
         else:

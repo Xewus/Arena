@@ -4,15 +4,18 @@ ATTRIBUTES_HERO = ('name', 'sex',  'defense', 'attack', 'health')
 #  things settings
 MAX_THING_DEFENSE = 50
 MAX_THING_ATTACK = 100
+MAX_THING_DODGE = 50
 MAX_THING_HEALTH = 100
 
 #  heros settings
 MAX_HERO_DEFENSE = 10
 MAX_HERO_ATTACK = 20
+MAX_HERO_DODGE = 10
 MAX_HERO_HEALTH = 50
 
 # game mode (restoring health)
-MAX_DEFENSE = 90
+MAX_DEFENSE = 99
+MAX_DODGE = 99
 MAX_POPULATION = 100
 SURVIVAL = False
 WITH_THINGS = True
@@ -43,4 +46,6 @@ NAMES = [
     ('Henry', 'm'),
 ]
 
-COUNT_BOTS = len(NAMES)
+COUNT_BOTS = 20
+if COUNT_BOTS > len(NAMES):
+    COUNT_BOTS = len(NAMES)

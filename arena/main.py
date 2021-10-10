@@ -3,9 +3,9 @@ from time import sleep
 
 from game import game_settings
 from game.game_settings import (
-    CREATE_USERS_HERO, MAX_HERO_DEFENSE, MAX_HERO_ATTACK,
-    MAX_HERO_HEALTH, NAMES, WITH_THINGS)
-from game.heroes import Child, Paladin, Warrior, AVAILABLE_HEROES_CLASSES
+    CREATE_USERS_HERO, MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_DODGE,
+    MAX_HERO_HEALTH, WITH_THINGS)
+from game.heroes import Child, AVAILABLE_HEROES_CLASSES
 from game.things import THINGS
 
 
@@ -61,18 +61,20 @@ def check_input_numeric_value(atr, min_value=0, max_value=1):
     return (value, max_value)[value > max_value]
 
 
-def auto_create_hero():
+def auto_create_hero(names):
     '''Creates bots when the program starts.'''
 
-    names = NAMES.copy()
-    klasse = Warrior if random.randint(0, 1) else Paladin
-    name, sex = names.pop(random.randint(0, len(NAMES) - 1))
+    klasses = list(AVAILABLE_HEROES_CLASSES.values())
+    klasse = random.choice(klasses)
+    name, sex = names.pop(random.randint(0, len(names) - 1))
     defense = random.randint(0, MAX_HERO_DEFENSE)
     attack = random.randint(1, MAX_HERO_ATTACK)
+    dodge = random.randint(0, MAX_HERO_DODGE)
     helth = random.randint(1, MAX_HERO_HEALTH)
-    hero = klasse(name, sex, defense, attack, helth)
+    hero = klasse(name, sex, defense, attack, dodge, helth)
     print(f'Create {type(hero).__name__} "{hero.name}" {hero.sex}\n'
-          f'def={hero.defense}, attack={hero.attack}, HP={hero.health}\n\n')
+          f'def={hero.defense}, attack={hero.attack}, '
+          f'dodge={hero.dodge}, HP={hero.health}\n\n')
     return hero
 
 
@@ -121,12 +123,17 @@ def create_hero():
         attack = check_input_numeric_value(
             atr='атака', max_value=MAX_HERO_ATTACK)
 
+    dodge = False
+    while dodge is False:
+        dodge = check_input_numeric_value(
+            atr='уклонение', max_value=MAX_HERO_DODGE)
+
     health = False
     while health is False:
         health = check_input_numeric_value(
             atr='здоровье', max_value=MAX_HERO_HEALTH)
 
-    hero = klasse(name, sex, defense, attack, health)
+    hero = klasse(name, sex, defense, attack, dodge, health)
     return hero
 
 
@@ -144,7 +151,8 @@ def user_create_hero(HEROES):
             break
         hero = create_hero()
         print(f'Create {type(hero).__name__} "{hero.name}" {hero.sex}\n'
-              f'def={hero.defense}, attack={hero.attack}, HP={hero.health}\n')
+              f'def={hero.defense}, attack={hero.attack}, '
+              f'dodge={hero.dodge} HP={hero.health}\n')
         HEROES.append(hero)
 
 
@@ -164,7 +172,8 @@ def get_things(heroes, things):
         else:
             print(f'\n"{hero.name}" не повезло, ему не выпало ничего!')
         print(
-            f'def={hero.defense}, attack={hero.attack}, HP={hero.health}\n\n')
+            f'def={hero.defense}, attack={hero.attack}, '
+            f'dodge={hero.dodge}, HP={hero.health}\n\n')
 
 
 def burn_child(heroes, fighter_1, fighter_2):
@@ -172,10 +181,11 @@ def burn_child(heroes, fighter_1, fighter_2):
 
     name = (fighter_1.name + fighter_2.name)[:13]
     sex = fighter_1.sex
-    defense = (fighter_1.defense + fighter_2.defense) / 2
-    attack = (fighter_1.attack + fighter_2.attack) / 2
-    health = (fighter_1.health + fighter_2.health) / 2
-    child = Child(name, sex, defense, attack, health)
+    defense = (fighter_1.defense + fighter_2.defense) // 2
+    attack = (fighter_1.attack + fighter_2.attack) // 2
+    dodge = (fighter_1.dodge + fighter_2.dodge) // 2
+    health = (fighter_1.health + fighter_2.health) // 2
+    child = Child(name, sex, defense, attack, dodge, health)
     heroes.append(child)
     if len(heroes) > MAX_POPULATION:
         random.shuffle(heroes)
@@ -211,7 +221,8 @@ def two_heroes_fight(HEROES, fighter_1, fighter_2):
 
 def main():
     user_settings()
-    HEROES = [auto_create_hero() for _ in range(COUNT_BOTS)]
+    names = game_settings.NAMES.copy()
+    HEROES = [auto_create_hero(names) for _ in range(COUNT_BOTS)]
     count_battle = 0
     user_create_hero(HEROES)
     if not HEROES:
@@ -235,7 +246,8 @@ def main():
     winner = HEROES[0]
     print(f'    Поздравляем чемпиона {count_battle} боёв:\n'
           f'    {type(winner).__name__} {winner.name} ({winner.sex})!!!\n'
-          f'def={winner.defense}, attack={winner.attack}, HP={winner.health}')
+          f'def={winner.defense}, attack={winner.attack}, '
+          f'dodge={winner.dodge}, HP={winner.health}')
     print('\n---------  GAME OVER  --------\n')
 
 

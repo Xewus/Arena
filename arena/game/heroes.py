@@ -13,8 +13,8 @@ class Hero():
     __slots__ = ATTRIBUTES_HERO
     _defense_multiplier = 1
     _attack_multiplier = 1
-    _health_multiplier = 1
     _dodge_multiplier = 1
+    _health_multiplier = 1
 
     def __init__(self, name='', surname='', sex='w',
                  defense=0, attack=0, dodge=0, health=0):
@@ -73,13 +73,15 @@ class Hero():
         self.finalDodge()
         self.finalHealth()
 
-    def decrease_helth(self, attack_damage):
+    def decrease_params(self, attack_damage):
         dodge = randint(0, MAX_DODGE)
+        self.dodge -= 1
         if dodge < self.dodge:
             print(f'{self.name} уклонился')
             return None
         damage = attack_damage - attack_damage * (self.defense / 100)
         self.health -= damage
+        self.defense -= 1
         print(f'{self.name} получил урон - {damage}')
         if self.health > 0:
             print(f'Осталось {self.health} HP')

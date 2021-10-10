@@ -1,18 +1,27 @@
 import random
+from pygame import mixer
 from time import sleep
 
 from game import game_settings
 from game.game_settings import (
-    CREATE_USERS_HERO, MAX_HERO_DEFENSE, MAX_HERO_ATTACK, MAX_HERO_DODGE,
-    MAX_HERO_HEALTH, WITH_THINGS)
+    CREATE_USERS_HERO, MAX_HERO_DEFENSE, MAX_HERO_ATTACK,
+    MAX_HERO_DODGE, MAX_HERO_HEALTH, WITH_THINGS)
 from game.heroes import AVAILABLE_HEROES_CLASSES
 from game.things import THINGS
 
+
+mixer.init()
+start_game = mixer.Sound(game_settings.start_game)
+burn = mixer.Sound(game_settings.burn_child)
+last_breath = mixer.Sound(game_settings.last_breath)
+death_half_population = mixer.Sound(game_settings.death_half_population)
+win = mixer.Sound(game_settings.win)
 
 COUNT_BOTS = game_settings.COUNT_BOTS
 COUNT_THINGS_ON_HERO = game_settings.COUNT_THINGS_ON_HERO
 MAX_POPULATION = game_settings.MAX_POPULATION
 SURVIVAL = game_settings.SURVIVAL
+FERTILITY = game_settings.FERTILITY
 
 
 def user_settings():
@@ -191,38 +200,50 @@ def burn_child(heroes, fighter_1, fighter_2):
     health = (fighter_1.health + fighter_2.health) // 2
     child = klasse(name, surname, sex, defense, attack, dodge, health)
     heroes.append(child)
+    burn.play()
+    sleep(2)
     if len(heroes) > MAX_POPULATION:
+        global FERTILITY
+        FERTILITY -= 1
         random.shuffle(heroes)
         del heroes[:(MAX_POPULATION // 2)]
         print('Половина населения погибли от голода!')
+        death_half_population.play()
+        sleep(3)
     return child
 
 
 def two_heroes_fight(HEROES, fighter_1, fighter_2):
     '''The battle of two heroes.
     A new bot may appear if two heroes of the opposite sex meet.'''
+    def tuple_for_freeze(fighter):
+        return (
+            fighter.defense, fighter.attack, fighter.dodge, fighter.health)
 
-    freeze_health_1 = fighter_1.health
-    freeze_health_2 = fighter_2.health
-    if fighter_1.sex != fighter_2.sex and random.randint(0, 1):
+    freeze_params_1 = tuple_for_freeze(fighter_1)
+    freeze_params_2 = tuple_for_freeze(fighter_2)
+    if fighter_1.sex != fighter_2.sex and random.randint(0, FERTILITY):
         return burn_child(HEROES, fighter_1, fighter_2)
 
     while True:
-        fighter_2.decrease_helth(fighter_1.attack)
+        fighter_2.decrease_params(fighter_1.attack)
         if fighter_2.health <= 0:
             HEROES.remove(fighter_2)
             if not SURVIVAL:
-                fighter_1.health = freeze_health_1
+                (fighter_1.defense, fighter_1.attack,
+                 fighter_1.dodge, fighter_1.health) = freeze_params_1
             return fighter_1
-        fighter_1.decrease_helth(fighter_2.attack)
+        fighter_1.decrease_params(fighter_2.attack)
         if fighter_1.health <= 0:
             HEROES.remove(fighter_1)
             if not SURVIVAL:
-                fighter_2.health = freeze_health_2
+                (fighter_2.defense, fighter_2.attack,
+                 fighter_2.dodge, fighter_2.health) = freeze_params_2
             return fighter_2
 
 
 def main():
+    start_game.play()
     user_settings()
     names = game_settings.NAMES.copy()
     HEROES = [auto_create_hero(names) for _ in range(COUNT_BOTS)]
@@ -247,9 +268,12 @@ def main():
                   f'def={winner.defense}, attack={winner.attack}, '
                   f'dodge={winner.dodge}, HP={winner.health}')
         else:
+            last_breath.play()
             print(f'В этом бою победил {winner.name}!!!\n')
+            sleep(2)
 
     winner = HEROES[0]
+    win.play()
     print(f'    Поздравляем чемпиона {count_battle} боёв:\n'
           f'    {type(winner).__name__} {winner.name} {winner.surname}!!!\n'
           f'def={winner.defense}, attack={winner.attack}, '

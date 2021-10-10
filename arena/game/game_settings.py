@@ -1,5 +1,18 @@
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# audiofiles
+start_game = BASE_DIR / 'Audio/start_game.mp3'
+burn_child = BASE_DIR / 'Audio/burn_child.mp3'
+last_breath = BASE_DIR / 'Audio/last_breath.mp3'
+death_half_population = BASE_DIR / 'Audio/death_half_population.mp3'
+win = BASE_DIR / 'Audio/win.mp3'
+
 # acceptable attributes of heroes
-ATTRIBUTES_HERO = ('name', 'sex',  'defense', 'attack', 'health')
+ATTRIBUTES_HERO = (
+    'name', 'sex',  'defense', 'attack', 'defense', 'health')
 
 #  things settings
 MAX_THING_DEFENSE = 50
@@ -16,7 +29,8 @@ MAX_HERO_HEALTH = 50
 # game mode (restoring health)
 MAX_DEFENSE = 90
 MAX_DODGE = 90
-MAX_POPULATION = 100
+MAX_POPULATION = 10
+FERTILITY = 10
 SURVIVAL = False
 WITH_THINGS = True
 CREATE_USERS_HERO = True
@@ -129,3 +143,5 @@ NAMES = [
 COUNT_BOTS = 50
 if COUNT_BOTS > len(NAMES):
     COUNT_BOTS = len(NAMES)
+if COUNT_BOTS > MAX_POPULATION:
+    COUNT_BOTS = MAX_POPULATION

@@ -77,16 +77,14 @@ class Hero():
         dodge = randint(0, MAX_DODGE)
         self.dodge -= 1
         if dodge < self.dodge:
-            print(f'{self.name} уклонился')
-            return None
+            return print(f'{self.name} уклонился')
         damage = attack_damage - attack_damage * (self.defense / 100)
         self.health -= damage
         self.defense -= 1
         print(f'{self.name} получил урон - {damage}')
         if self.health > 0:
-            print(f'Осталось {self.health} HP')
-        else:
-            print(f'Боец {self.name} умер!')
+            return print(f'Осталось {self.health} HP')
+        return print(f'Боец {self.name} умер!')
 
 
 class Paladin(Hero):

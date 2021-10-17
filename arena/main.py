@@ -42,14 +42,14 @@ def user_settings():
     count_things_on_hero = False
     while count_things_on_hero is False:
         count_things_on_hero = check_input_numeric_value(
-            atr='Количество вещей у героя',
+            atr='количество вещей у героя',
             max_value=game_settings.COUNT_THINGS_ON_HERO)
     COUNT_THINGS_ON_HERO = count_things_on_hero
 
     max_population = False
     while max_population is False:
         max_population = check_input_numeric_value(
-            atr='Максимально количество героев',
+            atr='максимально количество героев',
             min_value=COUNT_BOTS, max_value=game_settings.MAX_POPULATION)
     MAX_POPULATION = max_population
 
@@ -74,13 +74,13 @@ def auto_create_hero(names):
     '''Creates bots when the program starts.'''
 
     klasses = list(AVAILABLE_HEROES_CLASSES.values())
-    klasse = random.choice(klasses)
+    klass = random.choice(klasses)
     name, surname, sex = names.pop(random.randint(0, len(names) - 1))
     defense = random.randint(0, MAX_HERO_DEFENSE)
     attack = random.randint(1, MAX_HERO_ATTACK)
     dodge = random.randint(0, MAX_HERO_DODGE)
     helth = random.randint(1, MAX_HERO_HEALTH)
-    hero = klasse(name, surname, sex, defense, attack, dodge, helth)
+    hero = klass(name, surname, sex, defense, attack, dodge, helth)
     print(f'Create {type(hero).__name__} "{hero.name}" {hero.sex}\n'
           f'def={hero.defense}, attack={hero.attack}, '
           f'dodge={hero.dodge}, HP={hero.health}\n\n')
@@ -90,28 +90,26 @@ def auto_create_hero(names):
 def create_hero():
     '''Creating a custom hero.'''
 
-    klasse = False
-    while klasse is False:
+    klass = False
+    while klass is False:
         print('На данный момент в игре доступны следующие классы:')
-        [print(
-            AVAILABLE_HEROES_CLASSES[klass].__name__
-            ) for klass in AVAILABLE_HEROES_CLASSES]
-        klasse = input(
+        [print(klass.__name__) for klass in AVAILABLE_HEROES_CLASSES.values()]
+        klass = input(
             'Выберите класс введя первую букву класса: ').lower()
-        if klasse not in AVAILABLE_HEROES_CLASSES:
-            klasse = False
+        klass = AVAILABLE_HEROES_CLASSES.get(klass, False)
+        if not klass:
             print('Не правильно выбран класс.')
-            continue
-        klasse = AVAILABLE_HEROES_CLASSES[klasse]
-        print(f'Выбран {klasse.__name__}')
+    else:
+        print(f'Выбран {klass.__name__}')
 
     name = False
     while name is False:
-        name = input('Введите имя только из букв: ').capitalize()
+        name = input('Введите имя только из букв: ')
         if not name.isalpha():
             name = False
             print('Не правильное имя.')
             continue
+        name = name.capitalize()
         print(f'Выбрано {name}')
 
     surname = 'Userson'
@@ -144,7 +142,7 @@ def create_hero():
         health = check_input_numeric_value(
             atr='здоровье', max_value=MAX_HERO_HEALTH)
 
-    hero = klasse(name, surname, sex, defense, attack, dodge, health)
+    hero = klass(name, surname, sex, defense, attack, dodge, health)
     return hero
 
 
@@ -161,7 +159,7 @@ def user_create_hero(HEROES):
         if create != 'y':
             break
         hero = create_hero()
-        print(f'Create {type(hero).__name__} "{hero.name}" {hero.sex}\n'
+        print(f'Создан {type(hero).__name__} "{hero.name}" {hero.sex}\n'
               f'def={hero.defense}, attack={hero.attack}, '
               f'dodge={hero.dodge} HP={hero.health}\n')
         HEROES.append(hero)
@@ -213,7 +211,19 @@ def burn_child(heroes, fighter_1, fighter_2):
     return child
 
 
-def two_heroes_fight(HEROES, fighter_1, fighter_2):
+def hit(heroes, fighter_1, fighter_2, freeze_params):
+    '''The one hit of two heroes.'''
+    fighter_2.decrease_params(fighter_1.attack)
+    if fighter_2.health <= 0:
+        heroes.remove(fighter_2)
+        if not SURVIVAL:
+            (fighter_1.defense, fighter_1.attack,
+             fighter_1.dodge, fighter_1.health) = freeze_params
+        return fighter_1
+    return fighter_2
+
+
+def two_heroes_fight(heroes, fighter_1, fighter_2):
     '''The battle of two heroes.
     A new bot may appear if two heroes of the opposite sex meet.'''
     def tuple_for_freeze(fighter):
@@ -223,22 +233,14 @@ def two_heroes_fight(HEROES, fighter_1, fighter_2):
     freeze_params_1 = tuple_for_freeze(fighter_1)
     freeze_params_2 = tuple_for_freeze(fighter_2)
     if fighter_1.sex != fighter_2.sex and random.randint(0, FERTILITY):
-        return burn_child(HEROES, fighter_1, fighter_2)
+        return burn_child(heroes, fighter_1, fighter_2)
 
     while True:
-        fighter_2.decrease_params(fighter_1.attack)
-        if fighter_2.health <= 0:
-            HEROES.remove(fighter_2)
-            if not SURVIVAL:
-                (fighter_1.defense, fighter_1.attack,
-                 fighter_1.dodge, fighter_1.health) = freeze_params_1
+        alive = hit(heroes, fighter_1, fighter_2, freeze_params_1)
+        if alive == fighter_1:
             return fighter_1
-        fighter_1.decrease_params(fighter_2.attack)
-        if fighter_1.health <= 0:
-            HEROES.remove(fighter_1)
-            if not SURVIVAL:
-                (fighter_2.defense, fighter_2.attack,
-                 fighter_2.dodge, fighter_2.health) = freeze_params_2
+        alive = hit(heroes, fighter_2, fighter_1, freeze_params_2)
+        if alive == fighter_2:
             return fighter_2
 
 

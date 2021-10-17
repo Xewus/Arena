@@ -6,7 +6,7 @@ from game import game_settings
 from game.game_settings import (
     CREATE_USERS_HERO, MAX_HERO_DEFENSE, MAX_HERO_ATTACK,
     MAX_HERO_DODGE, MAX_HERO_HEALTH, WITH_THINGS)
-from game.heroes import AVAILABLE_HEROES_CLASSES
+from game.heroes import AVAILABLE_HEROES_CLASSES, Hero
 from game.things import THINGS
 
 
@@ -146,12 +146,12 @@ def create_hero():
     return hero
 
 
-def user_create_hero(HEROES):
+def user_create_hero(heroes):
     '''Allows the user to set game settings and create custom heroes.'''
 
     create_heroes = CREATE_USERS_HERO
     while create_heroes:
-        available_count_create = MAX_POPULATION - len(HEROES)
+        available_count_create = MAX_POPULATION - len(heroes)
         if not available_count_create:
             break
         print(f'Доступно создание {available_count_create} героев')
@@ -162,7 +162,7 @@ def user_create_hero(HEROES):
         print(f'Создан {type(hero).__name__} "{hero.name}" {hero.sex}\n'
               f'def={hero.defense}, attack={hero.attack}, '
               f'dodge={hero.dodge} HP={hero.health}\n')
-        HEROES.append(hero)
+        heroes.append(hero)
 
 
 def get_things(heroes, things):
@@ -248,33 +248,34 @@ def main():
     start_game.play()
     user_settings()
     names = game_settings.NAMES.copy()
-    HEROES = [auto_create_hero(names) for _ in range(COUNT_BOTS)]
+    heroes = [auto_create_hero(names) for _ in range(COUNT_BOTS)]
     count_battle = 0
-    user_create_hero(HEROES)
-    if not HEROES:
-        print('Желающих сражаться - нет.')
-        return None
-    get_things(HEROES, THINGS)
+    user_create_hero(heroes)
+    if not heroes:
+        return print('Желающих сражаться - нет.')
+    get_things(heroes, THINGS)
     print('\n---------  FIGHT!  --------\n')
 
-    while len(HEROES) > 1:
-        fighter_1, fighter_2 = random.sample(HEROES, 2)
+    while Hero.population > 1:
+        fighter_1, fighter_2 = random.sample(heroes, 2)
         count_battle += 1
         print(f'Бой №{count_battle} начался! \n'
               f'Участники: {type(fighter_1).__name__} {fighter_1.name} и'
               f' {type(fighter_2).__name__} {fighter_2.name}.\n')
-        winner = two_heroes_fight(HEROES, fighter_1, fighter_2)
+        winner = two_heroes_fight(heroes, fighter_1, fighter_2)
         if winner not in (fighter_1, fighter_2):
             print('Был рождён:\n'
                   f'{type(winner).__name__} {winner.name} {winner.surname}!\n'
                   f'def={winner.defense}, attack={winner.attack}, '
                   f'dodge={winner.dodge}, HP={winner.health}')
         else:
+            del fighter_1
+            del fighter_2
             last_breath.play()
             print(f'В этом бою победил {winner.name}!!!\n')
             sleep(2)
 
-    winner = HEROES[0]
+    winner = heroes[0]
     win.play()
     print(f'    Поздравляем чемпиона {count_battle} боёв:\n'
           f'    {type(winner).__name__} {winner.name} {winner.surname}!!!\n'

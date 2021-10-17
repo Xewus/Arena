@@ -16,6 +16,8 @@ class Hero():
     _dodge_multiplier = 1
     _health_multiplier = 1
 
+    population = 0
+
     def __init__(self, name='', surname='', sex='w',
                  defense=0, attack=0, dodge=0, health=0):
         if not name.isalpha():
@@ -45,6 +47,12 @@ class Hero():
         self.health = int(
             health / self.sex_dependence * self._health_multiplier)
         self.things = []
+        Hero.population += 1
+
+    def __del__(self):
+        '''Смерть героя.'''
+        Hero.population -= 1
+        print(f'{self.name} умер!')
 
     def finalDefense(self):
         for thing in self.things:
@@ -84,7 +92,7 @@ class Hero():
         print(f'{self.name} получил урон - {damage}')
         if self.health > 0:
             return print(f'Осталось {self.health} HP')
-        return print(f'Боец {self.name} умер!')
+        return print(f'У {self.name} кочилось здоровье')
 
 
 class Paladin(Hero):
